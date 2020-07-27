@@ -1,4 +1,5 @@
 class BlogsController < ApplicationController
+  before_action :authenticate_user
   before_action :set_blog, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -16,13 +17,13 @@ class BlogsController < ApplicationController
 
 # 以下、編集にも確認画面を適用
   def confirm
-    @blog = Blog.new(blog_params)
+    @blog = current_user.blogs.build(blog_params)
     @blog.id = params[:id]
     render :new if @blog.invalid?
   end
 
   def create
-    @blog = Blog.new(blog_params)
+    @blog = current_user.blogs.build(blog_params)
     if params[:back]
       render :new
     else
