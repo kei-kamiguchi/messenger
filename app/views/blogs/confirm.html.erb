@@ -1,5 +1,17 @@
+<!-- <h3>以下の内容で、送信する。</h3>
+<%= form_with(model: @blog, url: blogs_path, local: true) do |form| %>
+  <%= form.hidden_field :title %>
+  <%= form.hidden_field :content %>
+  <p>タイトル:<%= @blog.title %></p>
+  <p>本文:<%= @blog.content %></p>
+  <%= form.submit  "登録する" %>
+  <%= form.submit "戻る", name: 'back' %>
+<% end %> -->
+
+<!--   #　以下、編集にも確認画面を適用
+ -->
 <h3>以下の内容で、送信する。</h3>
-<%= form_with(model: @blog, local: true) do |form| %>
+<%= form_with(model: @blog, url: confirm_new_or_edit, method: confirm_form_method, local: true) do |form| %>
   <%= form.hidden_field :title %>
   <%= form.hidden_field :content %>
   <p>タイトル:<%= @blog.title %></p>

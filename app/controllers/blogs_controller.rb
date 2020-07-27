@@ -9,8 +9,15 @@ class BlogsController < ApplicationController
     @blog = Blog.new
   end
 
+  # def confirm
+  #   @blog = Blog.new(blog_params)
+  #   render :new if @blog.invalid?
+  # end
+
+# 以下、編集にも確認画面を適用
   def confirm
     @blog = Blog.new(blog_params)
+    @blog.id = params[:id]
     render :new if @blog.invalid?
   end
 
@@ -33,8 +40,19 @@ class BlogsController < ApplicationController
   def edit
   end
 
+  # def update
+  #   if @blog.update(blog_params)
+  #     redirect_to blogs_path, notice: "ブログを編集しました！"
+  #   else
+  #     render :edit
+  #   end
+  # end
+
+  # 以下、編集にも確認画面を適用
   def update
-    if @blog.update(blog_params)
+    if params[:back]
+      render :edit
+    elsif @blog.update(blog_params)
       redirect_to blogs_path, notice: "ブログを編集しました！"
     else
       render :edit
