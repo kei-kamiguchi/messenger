@@ -23,6 +23,9 @@ end
 - 対象のモデルに「password_digestカラム」を持たせる
 - 対象のモデルに「has_secure_password」を追記
 - gem 'bcrypt'のインストール
+
+# 疑問
+delegateの使い方がわからない
 　
 # テキスト修正
 「ログインしていないユーザはログイン画面に飛ばす」の部分
