@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  root 'blogs#index'
   # resources :blogs do
   #   collection do
   #     post :confirm
@@ -14,8 +15,11 @@ Rails.application.routes.draw do
       patch :confirm
     end
   end
-
+  
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
   resources :favorites, only: [:create, :destroy]
+  resources :conversations do
+    resources :messages
+  end
 end

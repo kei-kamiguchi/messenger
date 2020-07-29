@@ -1,36 +1,48 @@
-# カラムの追加
-https://qiita.com/azusanakano/items/a2847e4e582b9a627e3a
-# emailのカラムにインデックスを追加
+# スコープ
+## 使用するメリット
+whereメソッドなど独自の検索機能をメソッドとして切り出すことができる（クラスメソッドとして使用できる）
+- コードの可読性向上
+- 再利用可
+- 仕様変更が容易
+## 送り手と受け手の「組み合わせ」で判定するbetweenスコープ
 ```
-$ rails g migration add_index_to_users_email
-```
-[db/migrate/xxxxxxxxx_add_index_to_users_email.rb]
-```
-class AddIndexToUsersEmail < ActiveRecord::Migration[5.2]
- def change
-   add_index :users, :email, unique: true
- end
+scope :between, -> (sender_id, recipient_id) do
+  where("(conversations.sender_id = ? AND conversations.recipient_id =?) OR (conversations.sender_id = ? AND  conversations.recipient_id =?)", sender_id, recipient_id, recipient_id, sender_id)
 end
 ```
-# 保存する前にメールアドレスの値を小文字に変換する方法です。
+わかりやすくするためscopeを使わず、OR以降の条件も一旦外して解説します。
+なお、ここでは、`sender_id=1`, `recipient_id=2`としています。
 ```
-class User < ApplicationRecord
-  (省略)
-  before_validation { email.downcase! }
-end
-```
-# セキュアパスワードの設定
-- 対象のモデルに「password_digestカラム」を持たせる
-- 対象のモデルに「has_secure_password」を追記
-- gem 'bcrypt'のインストール
+Conversation.where("(conversations.sender_id = ? AND conversations.recipient_id = ?)", 1,2)
 
-# 疑問
-delegateの使い方がわからない
-　
-# テキスト修正
-「ログインしていないユーザはログイン画面に飛ばす」の部分
+# 上と下の内容は同じです。
+
+Conversation.where("(conversations.sender_id = 1 AND conversations.recipient_id = 2)")
 ```
-if @current_user == nil  #すべてnilになる
-if current_user == nil
+whereメソッド内で「?」を使用することで、「?」に代入するものを切り出すことができます。
+
+さらに、`sender_id = 2`、`recipient_id = 1`のレコードがあるかも検索する必要があるため、以下のようになる。
 ```
-https://diver.diveintocode.jp/curriculums/495
+Conversation.where("(conversations.sender_id = 1 AND conversations.recipient_id = 2) OR (conversations.sender_id = 2 AND conversations.recipient_id = 1)")
+```
+「?」を使用して代入を活用すると
+```
+Conversation.where("(conversations.sender_id = ? AND conversations.recipient_id = ?) OR (conversations.sender_id = ? AND conversations.recipient_id = ?)", 1, 2, 2, 1)
+```
+最後に「scope」の引数を使用した記述をすることで、元の形になります。
+
+# クエリストリング
+URLにパラメータを持たせることができることで、viewからcontrollerにパラメータを渡す方法
+```
+<%= link_to '以前のメッセージ', '?m=all' %>
+# 以下のように書き換えることもできる
+<%= link_to '以前のメッセージ', m: 'all' %>
+# 以下のようにパラメータを抽出できる
+params[:m]
+# => 'all'
+```
+# validates_uniqueness_of
+以下は、特定のテーブルに対し、sender_idに対するrecipient_idは一意であるという制約を持たせている。
+```
+validates_uniqueness_of :sender_id, scope: :recipient_id
+```
