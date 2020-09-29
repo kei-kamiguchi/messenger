@@ -9,9 +9,22 @@ class Conversation < ApplicationRecord
   # scopeメソッドを使用して、「between」というスコープを定義しています。
   # 検索条件を満たすインスタンスが実際に存在すればtrueを返します。
   # 上記のscopeとは別物
-  scope :between, -> (sender_id,recipient_id) do
-    where("(conversations.sender_id = ? AND conversations.recipient_id =?) OR (conversations.sender_id = ? AND  conversations.recipient_id =?)", sender_id,recipient_id, recipient_id, sender_id)
-  end
+  # scope :between, -> (sender_id,recipient_id) do
+  #   where("(conversations.sender_id = ? AND conversations.recipient_id =?) OR (conversations.sender_id = ? AND  conversations.recipient_id =?)", sender_id,recipient_id, recipient_id, sender_id)
+  # end
+
+  scope :between, -> (sender_id, recipient_id) {
+    where(
+      sender_id: sender_id,
+      recipient_id: recipient_id
+    ).or(
+      Conversation.where(
+        sender_id: recipient_id,
+        recipient_id: sender_id
+      )
+    )
+  }
+
   # 相手となるuserの情報を取得
   def target_user(current_user)
     if sender_id == current_user.id
