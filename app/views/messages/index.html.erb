@@ -1,5 +1,5 @@
 <% if @conversation.messages.length > 11 %>
-<%= link_to '以前のメッセージ', '?m=all' %>
+<%= link_to '以前のメッセージ', show: "all" %>
 <% end %>
 <div class="ui segment">
   <% @messages.each do |message| %>
