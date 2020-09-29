@@ -5,12 +5,14 @@ class ConversationsController < ApplicationController
   end
 
   def create
-    if Conversation.between(params[:sender_id], params[:recipient_id]).present?
-      @conversation = Conversation.between(params[:sender_id], params[:recipient_id]).first
-    else
+    unless (@conversation = Conversation.between(params[:sender_id], params[:recipient_id]).first)
       @conversation = Conversation.create!(conversation_params)
     end
     redirect_to conversation_messages_path(@conversation)
+
+    # @conversation = Conversation.between(params[:sender_id], params[:recipient_id]).first
+    # @conversation = Conversation.create!(conversation_params) if @conversation.nil?
+    # redirect_to conversation_messages_path(@conversation)
   end
 
   private
