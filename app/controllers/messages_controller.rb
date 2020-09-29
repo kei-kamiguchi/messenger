@@ -1,6 +1,8 @@
 class MessagesController < ApplicationController
   before_action :set_conversation
 
+  # コード改修案
+
   def index
     @messages = @conversation.messages.order(:created_at)
     @messages.where.not(user_id: current_user.id).update_all(read: true)
@@ -9,6 +11,8 @@ class MessagesController < ApplicationController
     end
     @message = Message.new
   end
+
+  # テキスト通り
 
   # def index
   #   @messages = @conversation.messages
